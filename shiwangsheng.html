@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>石友浩大战王胜东</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        #game {
+            margin-top: 50px;
+        }
+        #hero, #monster {
+            font-size: 2em;
+            margin: 20px;
+            position: relative;
+        }
+        .skillButton {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .skillButton:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        /* 动画效果 */
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        .attack-effect {
+            animation: pop 0.3s ease-in-out;
+        }
+        .shake-effect {
+            animation: shake 0.5s ease-in-out;
+        }
+        .skill-effect {
+            display: inline-block;
+            font-size: 1.5em;
+            margin: 10px;
+            animation: pop 0.5s ease-in-out;
+        }
+        .heal-effect {
+            color: green;
+        }
+        .damage-effect {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div id="hero">石友浩 🐶 生命值: <span id="heroHealth">100</span></div>
+        <div id="monster">王胜东 🐷 生命值: <span id="monsterHealth">100</span></div>
+
+        <h3>石友浩的技能</h3>
+        <button class="skillButton" id="normalAttackHero">普通攻击</button>
+        <button class="skillButton" id="skill1">一技能：长跪不起</button>
+        <button class="skillButton" id="skill2">二技能：跪地求饶</button>
+
+        <h3>王胜东的技能</h3>
+        <button class="skillButton" id="normalAttackMonster">普通攻击</button>
+        <button class="skillButton" id="monsterSkill1">一技能：回血</button>
+        <button class="skillButton" id="monsterSkill2">二技能：重击</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let heroHealth = 100;
+        let monsterHealth = 100;
+
+        // 更新生命值显示
+        function updateHealth() {
+            document.getElementById('heroHealth').textContent = heroHealth;
+            document.getElementById('monsterHealth').textContent = monsterHealth;
+        }
+
+        // 检查游戏是否结束
+        function checkGameOver() {
+            if (heroHealth <= 0) {
+                document.getElementById('result').innerHTML += '<br>石友浩被打败了！';
+                disableButtons();
+            } else if (monsterHealth <= 0) {
+                document.getElementById('result').innerHTML += '<br>王胜东被打败了！';
+                disableButtons();
+            }
+        }
+
+        // 禁用所有按钮
+        function disableButtons() {
+            document.querySelectorAll('.skillButton').forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        // 显示技能特效
+        function showSkillEffect(target, text, className) {
+            const effect = document.createElement('div');
+            effect.textContent = text;
+            effect.classList.add('skill-effect', className);
+            target.appendChild(effect);
+            setTimeout(() => effect.remove(), 1000);
+        }
+
+        // 石友浩的普通攻击
+        document.getElementById('normalAttackHero').addEventListener('click', function() {
+            monsterHealth -= 5; // 王胜东受到 5 点伤害
+            document.getElementById('monster').classList.add('attack-effect');
+            showSkillEffect(document.getElementById('monster'), '攻击！', 'damage-effect');
+            document.getElementById('result').innerHTML = '石友浩使用了普通攻击，对王胜东造成了 5 点伤害！<br>';
+            updateHealth();
+            checkGameOver();
+            setTimeout(() => document.getElementById('monster').classList.remove('attack-effect'), 300);
+        });
+
+        // 石友浩的技能
+        document.getElementById('skill1').addEventListener('click', function() {
+            monsterHealth -= -10; // 王胜东血量增加 10
+            showSkillEffect(document.getElementById('monster'), '回血！', 'heal-effect');
+            document.getElementById('result').innerHTML = '石友浩使用了「长跪不起」，王胜东恢复了 10 点血量！<br>';
+            updateHealth();
+            checkGameOver();
+        });
+
+        document.getElementById('skill2').addEventListener('click', function() {
+            monsterHealth -= -10; // 王胜东血量增加 10
+            showSkillEffect(document.getElementById('monster'), '回血！', 'heal-effect');
+            document.getElementById('result').innerHTML = '石友浩使用了「跪地求饶」，王胜东恢复了 10 点血量！<br>';
+            updateHealth();
+            checkGameOver();
+        });
+
+        // 王胜东的普通攻击
+        document.getElementById('normalAttackMonster').addEventListener('click', function() {
+            heroHealth -= 5; // 石友浩受到 5 点伤害
+            document.getElementById('hero').classList.add('shake-effect');
+            showSkillEffect(document.getElementById('hero'), '攻击！', 'damage-effect');
+            document.getElementById('result').innerHTML = '王胜东使用了普通攻击，对石友浩造成了 5 点伤害！<br>';
+            updateHealth();
+            checkGameOver();
+            setTimeout(() => document.getElementById('hero').classList.remove('shake-effect'), 500);
+        });
+
+        // 王胜东的技能
+        document.getElementById('monsterSkill1').addEventListener('click', function() {
+            monsterHealth += 10; // 王胜东恢复 10 点血量
+            showSkillEffect(document.getElementById('monster'), '回血！', 'heal-effect');
+            document.getElementById('result').innerHTML = '王胜东使用了「回血」，恢复了 10 点血量！<br>';
+            updateHealth();
+            checkGameOver();
+        });
+
+        document.getElementById('monsterSkill2').addEventListener('click', function() {
+            heroHealth -= 10; // 石友浩受到 10 点伤害
+            document.getElementById('hero').classList.add('shake-effect');
+            showSkillEffect(document.getElementById('hero'), '重击！', 'damage-effect');
+            document.getElementById('result').innerHTML = '王胜东使用了「重击」，对石友浩造成了 10 点伤害！<br>';
+            updateHealth();
+            checkGameOver();
+            setTimeout(() => document.getElementById('hero').classList.remove('shake-effect'), 500);
+        });
+    </script>
+</body>
+</html>
